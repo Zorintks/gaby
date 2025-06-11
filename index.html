@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Para Akila 💘</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(#ffe0e9, #fff0f5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      user-select: none;
+    }
+    h1 {
+      color: #d63384;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    #instruction {
+      user-select: none;
+    }
+    #maze {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      background: #ffe0f5;
+      border: 4px solid #d63384;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: repeat(8, 40px);
+      grid-template-rows: repeat(8, 40px);
+      gap: 1px; /* parede mais fina */
+      touch-action: none;
+    }
+    .wall {
+      background: #d63384;
+      border-radius: 4px;
+    }
+    .path {
+      background: #fff0f5;
+      border-radius: 4px;
+    }
+    #start {
+      grid-column: 1 / 2;
+      grid-row: 1 / 2;
+      background: #ff6f91;
+      border-radius: 50%;
+      position: relative;
+      z-index: 2;
+      cursor: grab;
+    }
+    #ball {
+      width: 24px;
+      height: 24px;
+      background: #d63384;
+      border-radius: 50%;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      touch-action: none;
+      cursor: grab;
+      transition: left 0.2s ease, top 0.2s ease;
+    }
+    #end {
+      grid-column: 8 / 9;
+      grid-row: 8 / 9;
+      background: #ff85a2;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      user-select: none;
+    }
+    #final {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+      color: #d63384;
+      user-select: none;
+    }
+    #final img {
+      display: block;
+      margin: 0 auto 15px auto;
+    }
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    #buttons {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      user-select: none;
+      position: relative;
+      height: 50px;
+    }
+    button {
+      background-color: #d63384;
+      border: none;
+      color: white;
+      padding: 10px 25px;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      position: relative;
+      touch-action: manipulation;
+    }
+    button:hover {
+      background-color: #ff6f91;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="instruction">Arraste a bolinha até o final do labirinto 💖</h1>
+  <div id="maze">
+    <!-- Labirinto 8x8, as paredes serão adicionadas por JS -->
+    <div id="start"><div id="ball"></div></div>
+    <div id="end">❤️ Final</div>
+  </div>
+
+  <div id="final">
+    <canvas id="confetti-canvas"></canvas>
+    <h1>Aceita ai pow 💘</h1>
+    <img src="/test.jpg" alt="Coração" width="200" />
+    <p style="max-width: 400px; font-size: 1.2rem;">
+      Parabéns Akilaa ocê acaba de conquista meu coraçãozin! 🌹
+    </p>
+    <div id="buttons">
+      <button id="yes-btn">Sim</button>
+      <button id="no-btn">Não</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    const maze = document.getElementById('maze');
+    const ball = document.getElementById('ball');
+    const final = document.getElementById('final');
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const instruction = document.getElementById('instruction');
+
+    let dragging = false;
+    let offsetX, offsetY;
+
+    const mazeMap = [
+      [0,1,0,0,0,1,0,0],
+      [0,1,0,1,0,1,0,1],
+      [0,0,0,1,0,0,0,1],
+      [1,1,0,1,1,1,0,1],
+      [0,0,0,0,0,1,0,0],
+      [0,1,1,1,0,1,1,0],
+      [0,0,0,1,0,0,0,0],
+      [1,1,0,1,1,1,1,0]
+    ];
+
+    for(let r = 0; r < 8; r++) {
+      for(let c = 0; c < 8; c++) {
+        if((r === 0 && c === 0) || (r === 7 && c === 7)) continue;
+        const cell = document.createElement('div');
+        cell.classList.add(mazeMap[r][c] ? 'wall' : 'path');
+        cell.style.gridRowStart = r + 1;
+        cell.style.gridColumnStart = c + 1;
+        maze.appendChild(cell);
+      }
+    }
+
+    const startPos = { left: 3, top: 3 };
+    ball.style.left = startPos.left + 'px';
+    ball.style.top = startPos.top + 'px';
+
+    const cellSize = 40 + 1; // 40px + 1px gap
+
+    function collidesWithWall(x, y) {
+      const mazeRect = maze.getBoundingClientRect();
+      let absX = mazeRect.left + x + ball.offsetWidth / 2;
+      let absY = mazeRect.top + y + ball.offsetHeight / 2;
+
+      let col = Math.floor((absX - mazeRect.left) / cellSize);
+      let row = Math.floor((absY - mazeRect.top) / cellSize);
+
+      if(row < 0 || row >= 8 || col < 0 || col >= 8) return true;
+
+      return mazeMap[row][col] === 1;
+    }
+
+    function checkWin(x, y) {
+      const mazeRect = maze.getBoundingClientRect();
+      let absX = mazeRect.left + x + ball.offsetWidth / 2;
+      let absY = mazeRect.top + y + ball.offsetHeight / 2;
+
+      let col = Math.floor((absX - mazeRect.left) / cellSize);
+      let row = Math.floor((absY - mazeRect.top) / cellSize);
+
+      return row === 7 && col === 7;
+    }
+
+    function resetBall() {
+      ball.style.left = startPos.left + 'px';
+      ball.style.top = startPos.top + 'px';
+    }
+
+    function onDragStart(e) {
+      dragging = true;
+      const rect = ball.getBoundingClientRect();
+      if(e.type === 'touchstart') {
+        offsetX = e.touches[0].clientX - rect.left;
+        offsetY = e.touches[0].clientY - rect.top;
+      } else {
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+      }
+      ball.style.cursor = 'grabbing';
+      e.preventDefault();
+    }
+
+    function onDragMove(e) {
+      if(!dragging) return;
+      let clientX, clientY;
+      if(e.type === 'touchmove') {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      const mazeRect = maze.getBoundingClientRect();
+      let newX = clientX - mazeRect.left - offsetX;
+      let newY = clientY - mazeRect.top - offsetY;
+
+      newX = Math.min(Math.max(newX, 0), maze.clientWidth - ball.offsetWidth);
+      newY = Math.min(Math.max(newY, 0), maze.clientHeight - ball.offsetHeight);
+
+      if(collidesWithWall(newX, newY)) {
+        resetBall();
+      } else {
+        ball.style.left = newX + 'px';
+        ball.style.top = newY + 'px';
+
+        if(checkWin(newX, newY)) {
+          finishGame();
+        }
+      }
+      e.preventDefault();
+    }
+
+    function onDragEnd(e) {
+      dragging = false;
+      ball.style.cursor = 'grab';
+      e.preventDefault();
+    }
+
+    function finishGame() {
+      maze.style.display = 'none';
+      instruction.style.display = 'none';
+      final.style.display = 'block';
+      confetti({
+        particleCount: 200,
+        spread: 120,
+        origin: { y: 0.6 },
+        scalar: 1.2,
+        ticks: 200
+      });
+    }
+
+    ball.addEventListener('mousedown', onDragStart);
+    window.addEventListener('mousemove', onDragMove);
+    window.addEventListener('mouseup', onDragEnd);
+
+    ball.addEventListener('touchstart', onDragStart, {passive:false});
+    window.addEventListener('touchmove', onDragMove, {passive:false});
+    window.addEventListener('touchend', onDragEnd);
+
+    // Botões sim/não na tela final
+    const yesBtn = document.getElementById('yes-btn');
+    const noBtn = document.getElementById('no-btn');
+    const buttonsDiv = document.getElementById('buttons');
+
+    yesBtn.addEventListener('click', () => {
+      alert('Sabia que você ia clicar em sim! Te amo ❤️');
+    });
+
+    function moveNoButton() {
+      const rect = buttonsDiv.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const maxX = rect.width - btnRect.width;
+      const maxY = rect.height - btnRect.height;
+
+      let newLeft, newTop;
+      do {
+        newLeft = Math.random() * maxX;
+        newTop = Math.random() * maxY;
+      } while (
+        Math.abs(newLeft - (noBtn.offsetLeft || 0)) < 50 &&
+        Math.abs(newTop - (noBtn.offsetTop || 0)) < 30
+      );
+
+      noBtn.style.position = 'relative';
+      noBtn.style.left = newLeft + 'px';
+      noBtn.style.top = newTop + 'px';
+    }
+
+    noBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      moveNoButton();
+    });
+
+    noBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moveNoButton();
+    });
+  </script>
+</body>
+</html>
