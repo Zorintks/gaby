@@ -108,9 +108,9 @@
       background-color: #d63384;
       border: none;
       color: white;
-      padding: 10px 25px;
+      padding: 14px 30px;
       border-radius: 25px;
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       cursor: pointer;
       user-select: none;
       transition: background-color 0.3s ease;
@@ -286,7 +286,7 @@
     const buttonsDiv = document.getElementById('buttons');
 
     yesBtn.addEventListener('click', () => {
-      alert('Sabia que você ia clicar em sim! Te amo ❤️');
+      // Sem alerta, volta para início
       final.style.display = 'none';
       maze.style.display = 'grid';
       instruction.style.display = 'block';
