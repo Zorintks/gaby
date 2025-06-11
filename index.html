@@ -34,7 +34,7 @@
       display: grid;
       grid-template-columns: repeat(8, 40px);
       grid-template-rows: repeat(8, 40px);
-      gap: 1px; /* parede mais fina */
+      gap: 1px;
       touch-action: none;
     }
     .wall {
@@ -95,7 +95,6 @@
       width: 100%; height: 100%;
       pointer-events: none;
     }
-
     #buttons {
       margin-top: 10px;
       display: flex;
@@ -126,7 +125,6 @@
 <body>
   <h1 id="instruction">Arraste a bolinha até o final do labirinto 💖</h1>
   <div id="maze">
-    <!-- Labirinto 8x8, as paredes serão adicionadas por JS -->
     <div id="start"><div id="ball"></div></div>
     <div id="end">❤️ Final</div>
   </div>
@@ -136,7 +134,7 @@
     <h1>Aceita ai pow 💘</h1>
     <img src="/test.jpg" alt="Coração" width="200" />
     <p style="max-width: 400px; font-size: 1.2rem;">
-      Parabéns Akilaa ocê acaba de conquista meu coraçãozin! 🌹
+      Ocê conquistou meu coraçãozin uai! 🌹
     </p>
     <div id="buttons">
       <button id="yes-btn">Sim</button>
@@ -181,7 +179,7 @@
     ball.style.left = startPos.left + 'px';
     ball.style.top = startPos.top + 'px';
 
-    const cellSize = 40 + 1; // 40px + 1px gap
+    const cellSize = 40 + 1;
 
     function collidesWithWall(x, y) {
       const mazeRect = maze.getBoundingClientRect();
@@ -283,13 +281,19 @@
     window.addEventListener('touchmove', onDragMove, {passive:false});
     window.addEventListener('touchend', onDragEnd);
 
-    // Botões sim/não na tela final
     const yesBtn = document.getElementById('yes-btn');
     const noBtn = document.getElementById('no-btn');
     const buttonsDiv = document.getElementById('buttons');
 
     yesBtn.addEventListener('click', () => {
       alert('Sabia que você ia clicar em sim! Te amo ❤️');
+      final.style.display = 'none';
+      maze.style.display = 'grid';
+      instruction.style.display = 'block';
+      resetBall();
+      noBtn.style.position = 'static';
+      noBtn.style.left = '0';
+      noBtn.style.top = '0';
     });
 
     function moveNoButton() {
