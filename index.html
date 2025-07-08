@@ -26,19 +26,22 @@
       border: none;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .download {
+    .actions {
       margin-top: 1rem;
       text-align: center;
     }
-    .download a {
+    .actions a, .actions button {
       padding: 10px 20px;
       background-color: #3498db;
       color: white;
       text-decoration: none;
       border-radius: 5px;
       font-weight: bold;
+      margin: 0 10px;
+      border: none;
+      cursor: pointer;
     }
-    .download a:hover {
+    .actions a:hover, .actions button:hover {
       background-color: #2980b9;
     }
   </style>
@@ -48,10 +51,24 @@
     <h1>Guia Completo de CSS e JavaScript</h1>
   </header>
   <div class="container">
-    <!-- Substitua "docs/Guia_Completo_CSS_JavaScript.pdf" pelo caminho real do seu arquivo -->
-    <iframe src="tags.pdf"></iframe>
-    <iframe src="java.pdf></iframe>
-    
+    <iframe id="pdfViewer" src="docs/Guia_Completo_CSS_JavaScript.pdf"></iframe>
+    <div class="actions">
+      <a href="docs/Guia_Completo_CSS_JavaScript.pdf" download>📥 Baixar PDF</a>
+      <button onclick="proximoPDF()">📄 Próximo PDF</button>
+    </div>
   </div>
+
+  <script>
+    const pdfs = [
+      "tags.pdf",
+      "java.pdf" // Adicione mais caminhos aqui conforme necessário
+    ];
+    let index = 0;
+
+    function proximoPDF() {
+      index = (index + 1) % pdfs.length;
+      document.getElementById("pdfViewer").src = pdfs[index];
+    }
+  </script>
 </body>
 </html>
