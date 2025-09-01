@@ -1,252 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-    <title>Para a garota mais pft do universo 💖</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    body {
-      margin: 0;
-      background: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-      touch-action: none; /* previne gestos de zoom e scroll */
-    }
-
-    canvas {
-      background: #222;
-      border: 3px solid red;
-      border-radius: 8px;
-      width: 90vw;
-      height: auto;
-      max-width: 420px;
-    }
-
-    /* Tela de vitória */
-    #victory {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-    }
-
-    #victory img {
-      max-width: 200px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-    }
-
-    #victory h1 {
-      font-size: 1.4rem;
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    /* Controles estilo joystick */
-    #controls {
-      position: fixed;
-      bottom: 25px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      z-index: 5;
-    }
-
-    .row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .spacer {
-      width: 70px;
-      height: 70px;
-    }
-
-    .btn {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      border: none;
-      background: linear-gradient(145deg, #e60000, #a00000);
-      color: white;
-      font-size: 28px;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(255,0,0,0.7);
-      transition: transform 0.2s;
-    }
-
-    .btn:active {
-      transform: scale(0.9);
-    }
-
-    /* Confetes/corações */
-    .particle {
-      position: fixed;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: fall linear forwards;
-      z-index: 20;
-    }
-
-    @keyframes fall {
-      to {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Curso MySQL – Visualizador de PDF</title>
+    <style>
+      :root {
+        --bg: #0f172a; /* slate-900 */
+        --fg: #e2e8f0; /* slate-200 */
+        --muted: #94a3b8; /* slate-400 */
+        --accent: #22d3ee; /* cyan-400 */
       }
-    }
-  </style>
-</head>
-<body>
-  <canvas id="maze" width="420" height="420"></canvas>
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
+          Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--fg);
+      }
+      header {
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.08);
+        display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+      }
+      header h1 { font-size: 18px; margin: 0; font-weight: 600; }
+      .actions { margin-left: auto; display: flex; gap: 10px; }
+      a.button {
+        text-decoration: none; color: var(--bg); background: var(--accent);
+        padding: 8px 12px; border-radius: 10px; font-weight: 600;
+      }
+      .hint { color: var(--muted); font-size: 14px; }
+      .viewer { height: calc(100% - 64px); }
+      .viewer iframe, .viewer object, .viewer embed { width: 100%; height: 100%; border: 0; }
+      .fallback { padding: 16px 20px; }
+      .file-missing { color: #fca5a5; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Curso MySQL – PDF</h1>
+      <span class="hint">Coloque este arquivo <code>index.html</code> e o PDF na mesma pasta.</span>
+      <div class="actions">
+        <a class="button" href="curso_mysql_completo.pdf" download>Baixar PDF completo</a>
+        <a class="button" href="curso_mysql.pdf" download>Baixar versão resumida</a>
+      </div>
+    </header>
 
-  <!-- Tela de vitória -->
-  <div id="victory">
-    <img src="img.png" alt="Vitória!">
-    <h1>🎉 Parabéns! Além de linda e maravilhosa é esperta! 💖</h1>
-  </div>
+    <div class="viewer">
+      <!-- Carrega o PDF principal -->
+      <iframe src="curso_mysql_completo.pdf" title="Curso MySQL (PDF)"></iframe>
 
-  <!-- Controles mobile estilo joystick -->
-  <div id="controls">
-    <div class="row">
-      <button class="btn" onclick="movePlayer(0,-1)">↑</button>
+      <!-- Fallback para navegadores sem suporte a iframe/pdf -->
+      <div class="fallback">
+        <p class="file-missing">
+          Se o PDF não apareceu, <a href="curso_mysql_completo.pdf">clique aqui para abrir</a>.
+        </p>
+        <p class="hint">Alguns navegadores exigem extensões/leitores de PDF para exibição embutida.</p>
+      </div>
     </div>
-    <div class="row">
-      <button class="btn" onclick="movePlayer(-1,0)">←</button>
-      <div class="spacer"></div>
-      <button class="btn" onclick="movePlayer(1,0)">→</button>
-    </div>
-    <div class="row">
-      <button class="btn" onclick="movePlayer(0,1)">↓</button>
-    </div>
-  </div>
-
-  <script>
-    // Bloqueio de zoom duplo no celular
-    let lastTouch = 0;
-    document.addEventListener('touchend', function (event) {
-      const now = new Date().getTime();
-      if (now - lastTouch <= 300) {
-        event.preventDefault(); // bloqueia duplo toque
-      }
-      lastTouch = now;
-    }, false);
-
-    const canvas = document.getElementById("maze");
-    const ctx = canvas.getContext("2d");
-
-    const tileSize = 30;
-    const rows = 14;
-    const cols = 14;
-
-    const maze = [
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      [1,"S",0,0,1,0,0,0,0,1,0,0,0,1],
-      [1,0,1,0,1,0,1,1,0,1,0,1,0,1],
-      [1,0,1,0,0,0,1,0,0,0,0,1,0,1],
-      [1,0,1,1,1,0,1,0,1,1,1,1,0,1],
-      [1,0,0,0,1,0,0,0,1,0,0,0,0,1],
-      [1,1,1,0,1,1,1,0,1,0,1,1,0,1],
-      [1,0,0,0,0,0,1,0,0,0,1,0,0,1],
-      [1,0,1,1,1,0,1,1,1,0,1,1,1,1],
-      [1,0,0,0,1,0,0,0,0,0,1,"F",0,1],
-      [1,1,1,0,1,1,1,1,1,0,1,1,0,1],
-      [1,0,0,0,0,0,0,0,1,0,0,0,0,1],
-      [1,0,1,1,1,1,1,0,1,1,1,1,0,1],
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-    ];
-
-    let player = { x:1, y:1 };
-
-    function drawMaze() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      for (let y=0; y<rows; y++) {
-        for (let x=0; x<cols; x++) {
-          if (maze[y][x] === 1) {
-            ctx.fillStyle = "#444";
-            ctx.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
-          } else if (maze[y][x] === "F") {
-            ctx.fillStyle = "gold";
-            ctx.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
-          }
-        }
-      }
-      ctx.fillStyle = "red";
-      ctx.beginPath();
-      ctx.arc(player.x*tileSize+tileSize/2, player.y*tileSize+tileSize/2, tileSize/3, 0, Math.PI*2);
-      ctx.fill();
-    }
-
-    function movePlayer(dx, dy) {
-      let nx = player.x + dx;
-      let ny = player.y + dy;
-
-      if (maze[ny][nx] !== 1) {
-        player.x = nx;
-        player.y = ny;
-        drawMaze();
-      }
-
-      if (maze[ny][nx] === "F") {
-        victory();
-      }
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowUp") movePlayer(0,-1);
-      if (e.key === "ArrowDown") movePlayer(0,1);
-      if (e.key === "ArrowLeft") movePlayer(-1,0);
-      if (e.key === "ArrowRight") movePlayer(1,0);
-    });
-
-    function victory() {
-      document.getElementById("victory").style.display = "flex";
-      setInterval(createParticle, 200);
-    }
-
-    function createParticle() {
-      const p = document.createElement("div");
-      p.className = "particle";
-      document.body.appendChild(p);
-
-      const hearts = ["❤️","💖","💘","💕","💞","❣️"];
-      const confettiColors = ["red","pink","yellow","white"];
-
-      if (Math.random() > 0.5) {
-        p.textContent = hearts[Math.floor(Math.random()*hearts.length)];
-        p.style.fontSize = "22px";
-      } else {
-        p.style.background = confettiColors[Math.floor(Math.random()*confettiColors.length)];
-      }
-
-      p.style.left = Math.random()*100 + "vw";
-      p.style.top = "-20px";
-      p.style.animationDuration = (3+Math.random()*2)+"s";
-
-      setTimeout(()=>p.remove(), 5000);
-    }
-
-    drawMaze();
-  </script>
-</body>
+  </body>
 </html>
-
-
