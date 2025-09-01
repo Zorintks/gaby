@@ -3,63 +3,61 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Curso MySQL – Visualizador de PDF</title>
+    <title>Visualizador de PDFs MySQL</title>
     <style>
-      :root {
-        --bg: #0f172a; /* slate-900 */
-        --fg: #e2e8f0; /* slate-200 */
-        --muted: #94a3b8; /* slate-400 */
-        --accent: #22d3ee; /* cyan-400 */
-      }
-      * { box-sizing: border-box; }
-      html, body { height: 100%; }
       body {
         margin: 0;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
-          Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji",
-          "Segoe UI Emoji";
-        background: var(--bg);
-        color: var(--fg);
+        font-family: Arial, sans-serif;
+        background: #f8f9fa;
+        color: #333;
+        text-align: center;
       }
       header {
-        padding: 16px 20px;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.08);
-        display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+        padding: 20px;
+        background: #007bff;
+        color: white;
       }
-      header h1 { font-size: 18px; margin: 0; font-weight: 600; }
-      .actions { margin-left: auto; display: flex; gap: 10px; }
-      a.button {
-        text-decoration: none; color: var(--bg); background: var(--accent);
-        padding: 8px 12px; border-radius: 10px; font-weight: 600;
+      .buttons {
+        margin: 20px;
       }
-      .hint { color: var(--muted); font-size: 14px; }
-      .viewer { height: calc(100% - 64px); }
-      .viewer iframe, .viewer object, .viewer embed { width: 100%; height: 100%; border: 0; }
-      .fallback { padding: 16px 20px; }
-      .file-missing { color: #fca5a5; }
+      button {
+        margin: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #007bff;
+        color: white;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      iframe {
+        width: 90%;
+        height: 80vh;
+        border: 1px solid #ccc;
+        margin: 20px auto;
+        display: block;
+      }
     </style>
   </head>
   <body>
     <header>
-      <h1>Curso MySQL – PDF</h1>
-      <span class="hint">Coloque este arquivo <code>index.html</code> e o PDF na mesma pasta.</span>
-      <div class="actions">
-        <a class="button" href="curso_mysql_completo.pdf" download>Baixar PDF completo</a>
-        <a class="button" href="curso_mysql.pdf" download>Baixar versão resumida</a>
-      </div>
+      <h1>Visualizador de PDFs - Curso MySQL</h1>
     </header>
 
-    <div class="viewer">
-      <!-- Carrega o PDF principal -->
-      <iframe src="curso_mysql_completo.pdf" title="Curso MySQL (PDF)"></iframe>
-
-      <!-- Fallback para navegadores sem suporte a iframe/pdf -->
-      <div class="fallback">
-        <p class="file-missing">
-          Se o PDF não apareceu, <a href="curso_mysql_completo.pdf">clique aqui para abrir</a>.
-        </p>
-        <p class="hint">Alguns navegadores exigem extensões/leitores de PDF para exibição embutida.</p>
-      </div>
+    <div class="buttons">
+      <button onclick="mostrarPDF('curso_mysql.pdf')">Versão Resumida</button>
+      <button onclick="mostrarPDF('curso_mysql_completo.pdf')">Versão Completa</button>
     </div>
+
+    <iframe id="pdfViewer" src=""></iframe>
+
+    <script>
+      function mostrarPDF(arquivo) {
+        document.getElementById("pdfViewer").src = arquivo;
+      }
+    </script>
   </body>
 </html>
